@@ -1,0 +1,7 @@
+
+git clone https://github.com/hoffmann/googlebooks.git
+cd googlebooks
+
+python setup.py install
+
+python google_books.py
