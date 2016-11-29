@@ -2,6 +2,6 @@
 
 Running 
     
-   python google_books.py "my phrase"
+    python google_books.py "my phrase"
 
 returns the search results as a pandas data frame with title, ISBN and category columns.
