@@ -27,13 +27,7 @@ class GoogleBooksQuery():
         self.result = self.r.json()
         GoogleBooksQuery.count += 1
     
-    @property
-    def totalItems(self):
-        '''Total number of search results for the phrase (not used in this version of the script).'''
-        return self.result["totalItems"]
-    
-
-        
+      
     def extract_information(self):
         '''Get title, ISBN and category for a Google Books query.'''
 
@@ -68,12 +62,6 @@ def get_all_books(phrase):
         except KeyError as e:
             break
     return books
-
-def print_full(x):
-    '''Print full pandas dataframe'''
-    pd.set_option('display.max_rows', len(x))
-    print(x)
-    pd.reset_option('display.max_rows')
 
 
 # execute from command line
