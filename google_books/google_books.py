@@ -69,8 +69,16 @@ def get_all_books(phrase):
             break
     return books
 
+def print_full(x):
+    '''Print full pandas dataframe'''
+    pd.set_option('display.max_rows', len(x))
+    print(x)
+    pd.reset_option('display.max_rows')
+
 
 # execute from command line
 if __name__ == '__main__':
-    print get_all_books(sys.argv[1])
+    result = get_all_books(sys.argv[1])
+    result.to_csv(sys.argv[2],sep="\t",encoding="utf-8",header=False,index=False)
+    print result
 
