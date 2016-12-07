@@ -47,12 +47,10 @@ class GoogleBooksQuery():
 def get_all_books(phrase,mid_date=True):
     '''Returns all of the results of a Google Books query.  Deletes records with non-conforming date-types from (e.g.,
     198? instead of 1983), adds decades and years.
-
     Parameters:
     -----------
     phrase: query Google Books for phrase
     mid_date: boolean, if true, converts the records with only a known publication year to "year-07-01", or if month is known than "year-month-15"
-
     Returns:
     --------
     A pandas dataframe containing title, ISBN, category and date as columns and books as rows
@@ -94,4 +92,3 @@ if __name__ == '__main__':
     result = get_all_books(sys.argv[1])
     result.to_csv(sys.argv[2],sep="\t",encoding="utf-8",header=False,index=False)
     print result
-
