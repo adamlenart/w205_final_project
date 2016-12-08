@@ -8,6 +8,8 @@ library(plotly)
 # functions for downloading data
 source("/home/adam/Documents/MIDS/W205/project/shiny-literally/import_data.r")
 
+# kibana src
+kibana_src <- "https://search-literal-ly-wtvk5wwjhvhyxm2sqotawqxhfi.us-east-1.es.amazonaws.com/_plugin/kibana/#/dashboard/literal-ly?embed&_a=(filters:!(),panels:!((col:1,id:Rating-per-category,row:4,size_x:12,size_y:4,type:visualization),(col:1,id:Average-Rating,row:1,size_x:6,size_y:3,type:visualization),(col:1,id:Query-counter,row:8,size_x:3,size_y:3,type:visualization),(col:7,id:Query-string,row:1,size_x:6,size_y:3,type:visualization),(col:4,id:Timeline,row:8,size_x:9,size_y:3,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:literal-ly)&_g=(refreshInterval:(display:'10%20seconds',pause:!f,section:1,value:10000),time:(from:now-15s,mode:relative,to:now))"
 
 # build network data
 get_links <- function(keep_n_cats,data,source="source",target="target",value="value") {
@@ -73,7 +75,13 @@ shinyServer(
   	  plot_ly(transform_data(input$filter3,rating_data,value="rating"), y=~rating, x=~category,type="box")   
   	    
   	)
-
+   # add kibana dashboard
+  	output$frame <- renderUI({
+  	  input$Member
+  	  kibana <- tags$iframe(src=kibana_src, height=800, width=600)
+  	  print(kibana)
+  	  kibana
+  	})
 
   
   }) # close shiny server
