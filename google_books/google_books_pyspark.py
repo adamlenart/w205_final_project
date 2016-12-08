@@ -114,9 +114,13 @@ def send_to_elastic(query,book_list):
     rating_list = [col[3] for col in book_list]
     rating = list()
     for i,cat in enumerate(categories):
-        rating.append(rating_list[category_list.index(cat)])
+        indices = [i for i,x in enumerate(category_list) if x == cat]
+        cat_rating = [rating_list[i] for i in indices]
+        avg_rating = sum(cat_rating)/len(cat_rating)
+        rating.append(avg_rating)
 
     categories_rating = dict(zip(categories,rating))
+    print categories_rating
     for i in range(len(categories)):
         data = dict()
         data["query"] = sys.argv[1]
@@ -129,7 +133,7 @@ def send_to_elastic(query,book_list):
         url = BASE_URL + "/literally_" + str(now.year) +  str('%02d' %now.month) +  str('%02d' %now.day) + "/event/" + datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f')[:-3]
         r = requests.put(url, data=json.dumps(data),
                          headers={'content-type':'application/json'})
-        return
+    return
 
 
 # execute from command line
