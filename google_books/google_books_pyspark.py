@@ -1,6 +1,8 @@
 import sys
 import os
 import requests
+import datetime
+import json
 from pyspark.sql import HiveContext
 from pyspark.sql import SQLContext
 from pyspark.sql.types import *
@@ -100,6 +102,36 @@ def merge_google_books_good_reads(hive_context):
     merged_table.show()
     return
 
+def send_to_elastic(query,book_list):
+    '''Function to send the aggregated data to display in Kibana'''
+
+    #Sort the data based on Rating in Decreasing Order
+    book_list = sorted(book_list,key=lambda x:x[3],reverse=True)
+    #Sort the data based on Category so that similar category elements are grouped together
+    book_list = sorted(book_list,key=lambda x:x[2])
+    category_list = [col[2] for col in book_list ]
+    categories = list(set(category_list))
+    rating_list = [col[3] for col in book_list]
+    rating = list()
+    for i,cat in enumerate(categories):
+        rating.append(rating_list[category_list.index(cat)])
+
+    categories_rating = dict(zip(categories,rating))
+    for i in range(len(categories)):
+        data = dict()
+        data["query"] = sys.argv[1]
+        data["category"] = categories[i]
+        data["rating"] = rating[i]
+        #data["timestamp"] = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+        data["timestamp"] = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M')
+        BASE_URL = "https://search-literal-ly-wtvk5wwjhvhyxm2sqotawqxhfi.us-east-1.es.amazonaws.com"
+        now = datetime.datetime.now()
+        url = BASE_URL + "/literally_" + str(now.year) +  str('%02d' %now.month) +  str('%02d' %now.day) + "/event/" + datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f')[:-3]
+        r = requests.put(url, data=json.dumps(data),
+                         headers={'content-type':'application/json'})
+        return
+
+
 # execute from command line
 if __name__ == '__main__':
     book_list = get_all_books(sys.argv[1])
@@ -109,3 +141,5 @@ if __name__ == '__main__':
     create_google_books_table(hive_context,book_list) 
 
     merge_google_books_good_reads(hive_context)
+
+    send_to_elastic(sys.argv[1],book_list)
