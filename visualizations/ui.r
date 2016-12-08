@@ -18,7 +18,8 @@ shinyUI(fluidPage(
                                                 choices = list("Adjective" = "ADJ", "Adverb" = "ADV", "Noun" = "NOUN", "Verb"="VERB"), 
                                                 selected = "ADJ")))),
              fluidRow(div(style='padding:10px',column(4,actionButton("search",label="Search")))),
-             img(src='/home/adam/Documents/MIDS/W205/project/shiny-literally/www/20161128-210810.png.png')
+             hr(),
+             div(style='margin-top:80px',plotlyOutput("fcast"))
     ),
     tabPanel("Network",
              h3("Links between categories and decades of publication"),
