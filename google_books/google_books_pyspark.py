@@ -129,7 +129,7 @@ def send_to_elastic(query,book_list):
         url = BASE_URL + "/literally_" + str(now.year) +  str('%02d' %now.month) +  str('%02d' %now.day) + "/event/" + datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S%f')[:-3]
         r = requests.put(url, data=json.dumps(data),
                          headers={'content-type':'application/json'})
-        return
+    return
 
 
 # execute from command line
