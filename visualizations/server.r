@@ -6,7 +6,7 @@ library(plotly)
 # define auxiliary functions
 
 # functions for downloading data
-source("/home/adam/Documents/MIDS/W205/project/shiny-literally/import_data.r")
+source("/home/adam/Documents/MIDS/W205/project/w205_final_project/visualizations/import_data.r")
 
 # kibana src
 kibana_src <- "https://search-literal-ly-wtvk5wwjhvhyxm2sqotawqxhfi.us-east-1.es.amazonaws.com/_plugin/kibana/#/dashboard/literal-ly?embed&_a=(filters:!(),panels:!((col:1,id:Rating-per-category,row:4,size_x:12,size_y:4,type:visualization),(col:1,id:Average-Rating,row:1,size_x:6,size_y:3,type:visualization),(col:1,id:Query-counter,row:8,size_x:3,size_y:3,type:visualization),(col:7,id:Query-string,row:1,size_x:6,size_y:3,type:visualization),(col:4,id:Timeline,row:8,size_x:9,size_y:3,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:literal-ly)&_g=(refreshInterval:(display:'10%20seconds',pause:!f,section:1,value:10000),time:(from:now-15s,mode:relative,to:now))"
@@ -51,6 +51,7 @@ transform_data <- function(keep_n_cats,data,value="value") {
 db_data <- get_data()
 network_data = db_data[[1]]
 rating_data = db_data[[2]] # there are fewer ratings than books, so it is better to keep them separately
+fcast_data = db_data[[3]]
 
 # define server side process
 shinyServer(
@@ -74,15 +75,24 @@ shinyServer(
   	output$boxplot <- renderPlotly(
   	  plot_ly(transform_data(input$filter3,rating_data,value="rating"), y=~rating, x=~category,type="box")   
   	    
-  	)
+  	) # close boxplot
    # add kibana dashboard
   	output$frame <- renderUI({
   	  input$Member
   	  kibana <- tags$iframe(src=kibana_src, height=800, width=600)
   	  print(kibana)
   	  kibana
-  	})
-
+  	}) # close kibana dashboard
+  
+  	output$fcast <- renderPlotly(
+  	  ggplot(fcast_data,aes(x=year,y=mean))+
+  	 geom_ribbon(ymin=fcast_data$lower95,ymax=fcast_data$upper95,alpha=0.6,fill="darkblue")+
+  	  geom_ribbon(ymin=fcast_data$lower80,ymax=fcast_data$upper80,alpha=0.6,fill="lightblue")+geom_line()+
+  	  theme_bw()+scale_y_continuous("Frequency\n",expand=c(0,0))+scale_x_continuous("\nYear",expand=c(0,0))+
+  	  geom_vline(xintercept=2009,size=0.5,linetype=2)+annotate("text",x=2003,y=2500,label="observed")+
+  	  annotate("text",x=2015,y=2500,label="forecast"),
+  	ggplotly()
+  	)
   
   }) # close shiny server
 
