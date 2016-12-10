@@ -89,6 +89,20 @@ def create_google_books_table(hive_context, book_list):
     hive_context.sql("CREATE TABLE google_books AS SELECT * FROM google_books_temp")
     return 
 
+def data_frame_to_list(df):
+    '''Function to convert Spark Data Frame to List of tuples'''
+
+    colNames = ['Title','isbn13','Category','Rating']
+
+    title_list = df.select(colNames[0]).flatMap(lambda x: x).collect()
+    isbn_list = df.select(colNames[1]).flatMap(lambda x: x).collect()
+    category_list = df.select(colNames[2]).flatMap(lambda x: x).collect()
+    rating_list = df.select(colNames[3]).flatMap(lambda x: x).collect()
+    merged_list = zip(title_list,isbn_list,category_list,rating_list)
+    return merged_list
+
+
+
 def merge_google_books_good_reads(hive_context):
     """Merge the good_reads table and google_books table with the common key as isbn13.
        We average the ratings from the 2 tables"""
@@ -100,7 +114,8 @@ def merge_google_books_good_reads(hive_context):
     hive_context.sql('CREATE TABLE query_bigram_result AS SELECT google_books.title, google_books.isbn13, google_books.category, AVG(CASE WHEN good_reads_temp.rating > 0 THEN (google_books.rating + good_reads_temp.rating)/2 ELSE google_books.rating END) as rating FROM google_books LEFT JOIN good_reads_temp ON google_books.isbn13 = good_reads_temp.isbn13 GROUP BY google_books.title,google_books.isbn13, google_books.category')
     merged_table = hive_context.sql('SELECT * from query_bigram_result')
     merged_table.show()
-    return
+    merged_list = data_frame_to_list(merged_table)  
+    return merged_list
 
 def send_to_elastic(query,book_list):
     '''Function to send the aggregated data to display in Kibana'''
@@ -144,6 +159,6 @@ if __name__ == '__main__':
     hive_context = HiveContext(sc)
     create_google_books_table(hive_context,book_list) 
 
-    merge_google_books_good_reads(hive_context)
+    merged_list = merge_google_books_good_reads(hive_context)
 
-    send_to_elastic(sys.argv[1],book_list)
+    send_to_elastic(sys.argv[1],merged_list)
