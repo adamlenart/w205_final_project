@@ -59,4 +59,17 @@ a 15 GB part of it, the bigrams starting with the ``ab'' sequence are loaded int
 \caption{High-level overview of the architecture of the application}
 \end{figure}
 
+\section{Sentiment Analysis of Expressions}
+
+There is a python script to query GoodReads , once every one second, and collect information on Books and their ratings. This is stored in HDFS and we create a table called good_reads using Hive
+There is a python script to ask the user for an Expression . Ex: Hello world
+/data/spark15/bin/spark-submit google_books_pyspark.py "Hello world"
+This script queries google books and obtains the list of books which contain the expression.
+The query result is stored in a table called google_books from pyspark’s HiveContext.
+The two tables good_reads and google_books are merged with the common key ISBN13 ( Left Join in SQL)  to create a new  table called query_bigram_result
+We store the average book rating in this merged table.
+The merged table (list of books) is sent to ElasticSearch. 
+Kibana displays expressions and  their query results over time. This can be useful to look at the most popular queried expressions and their results in terms of ratings per category.
+We can see a sample merged table when a user queries for an expression and a screenshot of kibana display in the next page.
+
 \end{document}
