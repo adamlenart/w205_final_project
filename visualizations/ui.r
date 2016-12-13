@@ -6,7 +6,7 @@ library(networkD3)
 library(plotly)
 
 shinyUI(fluidPage(
-  titlePanel("Literal-ly"),
+  titlePanel("Literari-ly"),
   
   navlistPanel(
     "Visualizations",

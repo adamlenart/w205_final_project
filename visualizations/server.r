@@ -9,8 +9,7 @@ library(plotly)
 source("/home/adam/Documents/MIDS/W205/project/w205_final_project/visualizations/import_data.r")
 
 # kibana src
-kibana_src <- "https://search-literal-ly-wtvk5wwjhvhyxm2sqotawqxhfi.us-east-1.es.amazonaws.com/_plugin/kibana/#/dashboard/literal-ly?embed&_a=(filters:!(),panels:!((col:1,id:Rating-per-category,row:4,size_x:12,size_y:4,type:visualization),(col:1,id:Average-Rating,row:1,size_x:6,size_y:3,type:visualization),(col:1,id:Query-counter,row:8,size_x:3,size_y:3,type:visualization),(col:7,id:Query-string,row:1,size_x:6,size_y:3,type:visualization),(col:4,id:Timeline,row:8,size_x:9,size_y:3,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:literal-ly)&_g=(refreshInterval:(display:'10%20seconds',pause:!f,section:1,value:10000),time:(from:now-15s,mode:relative,to:now))"
-
+kibana_src <- "https://search-literal-ly-wtvk5wwjhvhyxm2sqotawqxhfi.us-east-1.es.amazonaws.com/_plugin/kibana/#/dashboard/Literari-ly?embed&_g=(refreshInterval:(display:'10%20seconds',pause:!f,section:1,value:10000),time:(from:now-15s,mode:relative,to:now))&_a=(filters:!(),panels:!((col:1,id:Rating-per-category,row:4,size_x:12,size_y:4,type:visualization),(col:1,id:Average-Rating,row:1,size_x:6,size_y:3,type:visualization),(col:1,id:Query-counter,row:8,size_x:3,size_y:3,type:visualization),(col:7,id:Query-string,row:1,size_x:6,size_y:3,type:visualization),(col:4,id:Timeline,row:8,size_x:9,size_y:3,type:visualization)),query:(query_string:(analyze_wildcard:!t,query:'*')),title:Literari-ly)"
 # build network data
 get_links <- function(keep_n_cats,data,source="source",target="target",value="value") {
   foo <- transform_data(keep_n_cats,data, value=value)
@@ -90,8 +89,8 @@ shinyServer(
   	  geom_ribbon(ymin=fcast_data$lower80,ymax=fcast_data$upper80,alpha=0.6,fill="lightblue")+geom_line()+
   	  theme_bw()+scale_y_continuous("Frequency\n",expand=c(0,0))+scale_x_continuous("\nYear",expand=c(0,0))+
   	  geom_vline(xintercept=2009,size=0.5,linetype=2)+annotate("text",x=2003,y=2500,label="observed")+
-  	  annotate("text",x=2015,y=2500,label="forecast"),
-  	ggplotly()
+  	  annotate("text",x=2015,y=2500,label="forecast")#,
+ # 	ggplotly()
   	)
   
   }) # close shiny server
