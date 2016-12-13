@@ -14,9 +14,14 @@ sudo -u hdfs hdfs dfs -chown w205 /user/w205/literally/good_reads
 
 su - w205
 aws configure
+#get bigram_data
 mkdir /data/bigram_data
 python get_bigrams.py
 gunzip /data/bigram_data/*
+
+#get good_reads data
+cp book_ratings/book_reviews*.csv /data/good_reads/.
+
 hdfs dfs -put /data/bigram_data/* /user/w205/literally/bigram
 
 mkdir /data/good_reads
